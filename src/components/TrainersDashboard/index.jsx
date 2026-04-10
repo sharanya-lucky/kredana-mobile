@@ -190,6 +190,11 @@ const TrainersDashboard = () => {
      🔥 FETCH TRAINER TYPE
   ============================= */
   useEffect(() => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(true);
+    }
+  }, []);
+  useEffect(() => {
     const fetchTrainerType = async () => {
       const user = auth.currentUser;
       if (!user) return;
@@ -398,19 +403,7 @@ const TrainersDashboard = () => {
       setDeleting(false);
     }
   };
-  
   const renderMainContent = () => {
-    if (view === "trainersData") {
-  return (
-    <>
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-orange-500 mb-4">
-        Trainers Data
-      </h1>
-
-      <TrainersTable />
-    </>
-  );
-}
     if (view === "MyStudents") return <MyStudents />;
     if (view === "Editprofile") return <Editprofile />;
     if (view === "studentsAttendance") return <StudentsAttendancePage />;
@@ -484,28 +477,36 @@ const TrainersDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-gray-700 overflow-hidden relative">
+    <div className="h-screen flex bg-gray-700 overflow-hidden relative">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-black z-40 flex items-center justify-between px-3 sm:px-4 py-3">
+      <div className="lg:hidden fixed top-12 left-0 right-0  z-[60] flex items-center justify-between px-4 py-3 shadow-md">
         <button
           onClick={() => setSidebarOpen(true)}
-          className="text-orange-500 text-2xl"
+          className="text-white text-2xl"
         >
           ☰
         </button>
 
         <span className="text-orange-500 font-bold">
-          {institute?.instituteName || "Institute"}
+          {institute?.instituteName}
         </span>
       </div>
       <aside
         className={`
-    fixed lg:static top-0 left-0 h-full w-full lg:w-72 bg-gray-700 p-3 overflow-y-auto
-    transform transition-transform duration-300 z-50
+    fixed lg:static top-0 left-0 h-full w-72 sm:w-80 bg-gray-900 p-4 overflow-y-auto
+    transform transition-transform duration-300 z-[55] shadow-xl
     ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
     lg:translate-x-0
   `}
       >
+        <div className="lg:hidden flex justify-end mb-4">
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="text-white text-2xl"
+          >
+            ✕
+          </button>
+        </div>
         {/* ===== INSTITUTE CARD ===== */}
         <div className="bg-black rounded-xl px-4 py-3 flex items-center gap-4 mb-3">
           {/* PROFILE IMAGE */}
@@ -639,16 +640,16 @@ const TrainersDashboard = () => {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-[50] lg:hidden"
         />
       )}
 
-     <main className="flex-1 bg-white px-3 sm:px-4 md:px-6 lg:px-10 py-6 sm:py-8 overflow-y-auto h-full mt-14 lg:mt-0">
+      <main className="flex-1 bg-white px-4 sm:px-6 md:px-8 lg:px-10 py-8 overflow-y-auto h-full mt-14 lg:mt-0">
         {renderMainContent()}
       </main>
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] sm:w-[600px] rounded-lg p-4 sm:p-8 relative text-center">
+          <div className="bg-white w-[600px] rounded-lg p-8 relative text-center">
             <button
               onClick={() => setShowDeleteModal(false)}
               className="absolute top-4 right-4 text-2xl"
@@ -694,7 +695,7 @@ const TrainersDashboard = () => {
       )}
       {showDeletedSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white w-[90%] sm:w-[900px] h-auto sm:h-[500px] rounded-lg relative flex flex-col items-center justify-center">
+          <div className="bg-white w-[900px] h-[500px] rounded-lg relative flex flex-col items-center justify-center">
             <button
               onClick={() => {
                 setShowDeletedSuccess(false);

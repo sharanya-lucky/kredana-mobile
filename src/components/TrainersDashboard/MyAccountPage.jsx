@@ -1227,13 +1227,13 @@ const MyAccountPage = ({ setActiveMenu }) => {
           </div>
 
           {/* TABLE */}
-          <div className="overflow-x-auto rounded-lg border">
+         <div className="overflow-x-auto scroll-smooth rounded-lg border bg-white">
             {/* TABLE HEADER */}
             <div
               className={`grid ${statusFilter === "Left"
-                  ? "grid-cols-[1.5fr_0.8fr_0.8fr_1fr_1.2fr_1fr_1fr_100px]"
-                  : "grid-cols-[1.5fr_0.8fr_0.8fr_1fr_1fr_1fr_100px]"
-                } bg-[#E9B489] text-black font-medium px-6 py-3 items-center`}
+                  ? "min-w-[1100px] grid-cols-8"
+                  : "min-w-[900px] grid-cols-7"
+                } bg-[#1F2937] text-orange-400 font-semibold px-6 py-4 items-center`}
             >
               <p>Name</p>
               <p>Age</p>
@@ -1250,8 +1250,8 @@ const MyAccountPage = ({ setActiveMenu }) => {
               <div
                 key={student.id}
                 className={`grid ${statusFilter === "Left"
-                    ? "grid-cols-[1.5fr_0.8fr_0.8fr_1fr_1.2fr_1fr_1fr_100px]"
-                    : "grid-cols-[1.5fr_0.8fr_0.8fr_1fr_1fr_1fr_100px]"
+                    ? "min-w-[1100px] grid-cols-8"
+                    : "min-w-[900px] grid-cols-7"
                   } px-6 py-4 items-center border-t`}
               >
                 <p className="flex items-center gap-1">

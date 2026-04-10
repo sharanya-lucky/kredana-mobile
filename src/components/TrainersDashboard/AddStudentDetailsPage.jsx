@@ -15,7 +15,7 @@ import { User, ChevronDown } from "lucide-react";
 import { getDoc } from "firebase/firestore";
 /* -------------------- STYLES -------------------- */
 const inputClass =
-  "h-11 px-3 border border-orange-400 rounded-md bg-white outline-none focus:border-2 focus:border-orange-500";
+  "h-11 px-3 w-full border border-orange-400 rounded-md bg-white outline-none focus:border-2 focus:border-orange-500";
 
 const DEFAULT_PASSWORD = "123456";
 
@@ -937,10 +937,10 @@ export default function AddTrainerDetailsPage() {
     <div className="min-h-screen flex justify-center bg-white py-10">
       <div className="w-full max-w-5xl p-2">
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-10">
+       <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 text-center lg:text-left">
           {/* PROFILE */}
           {/* LEFT : Upload Profile */}
-          <div className="flex flex-col items-center mt-6">
+          <div className="flex flex-col items-center mt-6 w-full lg:w-auto">
             <div
               onClick={() => profileInputRef.current.click()}
               className="w-24 h-24 rounded-full bg-orange-200 flex items-center justify-center cursor-pointer overflow-hidden"
@@ -983,7 +983,7 @@ export default function AddTrainerDetailsPage() {
 
             <p className="mt-4">Step {step} to 2</p>
 
-            <div className="flex gap-4 mt-4 w-[580px]">
+           <div className="flex gap-4 mt-4 w-full max-w-xl">
               {[1, 2].map((s) => (
                 <div
                   key={s}
@@ -999,7 +999,7 @@ export default function AddTrainerDetailsPage() {
 
         {/* STEP 1 */}
         {step === 1 && (
-          <div className="grid grid-cols-2 gap-x-10 gap-y-6">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
             {/* Row 1 */}
             <div className="flex flex-col">
               <label className="text-sm font-semibold mb-2">

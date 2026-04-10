@@ -75,6 +75,7 @@ const otherUserSidebarItems = [
   "BookingsPage",
 ];
 const SettingsItems = ["Customer Policy", "Privacy Policy", "Logout"];
+
 /* ============================= 
    WELCOME SCREEN
 ============================= */
@@ -93,6 +94,7 @@ const WelcomeDashboard = () => (
    MAIN DASHBOARD
 ============================= */
 const UserDashboard = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("WELCOME");
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -153,9 +155,8 @@ const UserDashboard = () => {
 
             return {
               uid: s.uid,
-              name: `${s.firstName} ${s.lastName}${
-                instituteName ? ` (${instituteName})` : ""
-              }`,
+              name: `${s.firstName} ${s.lastName}${instituteName ? ` (${instituteName})` : ""
+                }`,
             };
           }),
         );
@@ -328,9 +329,8 @@ const UserDashboard = () => {
 
           list.push({
             uid,
-            name: `${data.firstName || ""} ${data.lastName || ""}${
-              instituteName ? ` (${instituteName})` : ""
-            }`,
+            name: `${data.firstName || ""} ${data.lastName || ""}${instituteName ? ` (${instituteName})` : ""
+              }`,
           });
         }
       }
@@ -522,17 +522,78 @@ const UserDashboard = () => {
      DASHBOARD UI
   ============================= */
   return (
-   <div className="min-h-screen flex flex-col md:flex-row bg-gray-700 overflow-hidden">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-700 overflow-hidden">
+      {/* Mobile Header */}
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-black shadow-md">
+
+        {/* LEFT → LOGO */}
+        <img src="/logo.png" alt="logo" className="w-8 h-8 rounded-full" />
+
+        {/* RIGHT → 3 DOTS */}
+        <div className="relative">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-white text-2xl"
+          >
+            ⋮
+          </button>
+
+          {sidebarOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-md">
+              <button
+                onClick={() => {
+                  setActiveMenu("My Account");
+                  setSidebarOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                My Account
+              </button>
+
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setSidebarOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+
+      </div>
       {/* Sidebar */}
-   <aside className="w-full md:w-72 bg-gray-700 p-3 overflow-y-auto">
+      <aside
+
+        className={`
+    fixed md:static top-0 left-0 h-full w-[80%] sm:w-72 bg-gray-700 p-3 overflow-y-auto
+    transform transition-transform duration-300 z-50
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    md:translate-x-0
+  `}
+
+      >
+        {/* ✅ ADD THIS EXACTLY HERE */}
+        <div className="md:hidden flex justify-end mb-2">
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="text-white text-2xl"
+          >
+            ✕
+          </button>
+        </div>
+
         {/* User Card */}
-       <div className="bg-black rounded-xl px-4 py-3 flex items-center gap-3 mb-3">
+        <div className="bg-black rounded-xl px-4 py-3 flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-orange-400">
             <span className="text-orange-400 font-bold">
               {user?.displayName?.charAt(0) || "U"}
             </span>
           </div>
-         <span className="text-orange-500 font-bold text-base sm:text-lg md:text-xl break-words">
+          <span className="text-orange-500 font-bold text-base sm:text-lg md:text-xl break-words">
             {user?.displayName || "User"}
           </span>
         </div>
@@ -573,11 +634,10 @@ const UserDashboard = () => {
                 if (item === "Log Out") return handleLogout();
                 setActiveMenu(item);
               }}
-              className={`w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-lg  flex items-center gap-2 transition-all mb-1 ${
-                activeMenu === item
-                  ? "text-orange-500 font-semibold bg-gray-800"
-                  : "text-white hover:text-orange-400"
-              }`}
+              className={`w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-lg  flex items-center gap-2 transition-all mb-1 ${activeMenu === item
+                ? "text-orange-500 font-semibold bg-gray-800"
+                : "text-white hover:text-orange-400"
+                }`}
             >
               {item}
             </button>
@@ -593,11 +653,10 @@ const UserDashboard = () => {
                 if (item === "Logout") return handleLogout();
                 setActiveMenu(item);
               }}
-              className={`block w-full text-left py-2 ${
-                activeMenu === item
-                  ? "text-orange-500 font-semibold"
-                  : "text-white hover:text-orange-400"
-              }`}
+              className={`block w-full text-left py-2 ${activeMenu === item
+                ? "text-orange-500 font-semibold"
+                : "text-white hover:text-orange-400"
+                }`}
             >
               {item}
             </button>
@@ -613,14 +672,28 @@ const UserDashboard = () => {
           </button>
         </div>
       </aside>
-
+      {/* ✅ ADD THIS EXACTLY HERE */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+        />
+      )}
       {/* Main Content */}
-     <main className="flex-1 bg-white px-4 sm:px-6 md:px-10 py-6 md:py-8 overflow-y-auto">
+      <main className="flex-1 bg-white px-4 sm:px-6 md:px-10 py-6 md:py-8 overflow-y-auto mt-12 md:mt-0">
+        <div className="md:hidden bg-gray-800 text-white px-4 py-2 mb-3 flex items-center gap-3">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-white text-lg"
+          >
+            ☰
+          </button>
+        </div>
         {renderMainContent()}
       </main>
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-        <div className="bg-white w-[90%] sm:w-[600px] rounded-lg p-4 sm:p-8 relative text-center">
+          <div className="bg-white w-[90%] sm:w-[600px] rounded-lg p-4 sm:p-8 relative text-center">
             <button
               onClick={() => setShowDeleteModal(false)}
               className="absolute top-4 right-4 text-2xl"

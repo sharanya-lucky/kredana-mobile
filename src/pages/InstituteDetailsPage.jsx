@@ -146,36 +146,47 @@ export default function InstituteDetailsPage() {
       {/* HEADER */}
       <div className="bg-white rounded-3xl shadow-lg p-6 md:p-8">
         {/* TOP ROW */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           {/* LEFT SIDE - Logo + Name */}
-          <div className="flex items-center gap-5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+
+            {/* LOGO */}
             <img
               src={inst.profileImageUrl}
               className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-orange-400"
             />
-            <h1 className="text-3xl lg:text-4xl font-extrabold text-[#ff7a00] mt-5">
-              {inst.instituteName}
-            </h1>
-            <div className="flex gap-1 mt-3">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <span
-                  key={s}
-                  onClick={() => handleRating(s)}
-                  className={`text-2xl cursor-pointer ${
-                    inst.ratingsByUser?.[auth.currentUser?.uid] >= s
-                      ? "text-yellow-400"
-                      : "text-gray-300 hover:text-yellow-300"
-                  }`}
-                >
-                  ⭐
-                </span>
-              ))}
+
+            {/* NAME + RATING */}
+            <div className="flex flex-col">
+
+              {/* NAME */}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#ff7a00]">
+                {inst.instituteName}
+              </h1>
+
+              {/* STARS */}
+              <div className="flex flex-wrap items-center gap-1 mt-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <span
+                    key={s}
+                    onClick={() => handleRating(s)}
+                    className={`text-lg sm:text-xl cursor-pointer ${inst.ratingsByUser?.[auth.currentUser?.uid] >= s
+                        ? "text-yellow-400"
+                        : "text-gray-300 hover:text-yellow-300"
+                      }`}
+                  >
+                    ⭐
+                  </span>
+                ))}
+              </div>
+
+              {/* RATING TEXT */}
+              <p className="text-xs sm:text-sm font-semibold mt-1 text-gray-600">
+                {inst.rating?.toFixed(1) || "0.0"} ⭐ ({inst.ratingCount || 0} reviews)
+              </p>
+
             </div>
 
-            <p className="text-sm font-semibold mt-1">
-              {inst.rating?.toFixed(1) || "0.0"} ⭐ ({inst.ratingCount || 0}{" "}
-              reviews)
-            </p>
           </div>
 
           {/* RIGHT SIDE - Buttons */}
@@ -357,9 +368,9 @@ export default function InstituteDetailsPage() {
           <p>
             <span className="font-semibold">Policies & Agreements :</span>{" "}
             {inst.agreements?.merchantPolicy &&
-            inst.agreements?.paymentPolicy &&
-            inst.agreements?.privacyPolicy &&
-            inst.agreements?.termsAndConditions
+              inst.agreements?.paymentPolicy &&
+              inst.agreements?.privacyPolicy &&
+              inst.agreements?.termsAndConditions
               ? "Policies & Agreements include Merchant Policy, Payment Policy, Privacy Policy, and Terms & Conditions, all of which have been accepted."
               : "Policies & Agreements have not been fully accepted."}
           </p>
