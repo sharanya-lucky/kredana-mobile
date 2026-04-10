@@ -21,8 +21,22 @@ const DEFAULT_PASSWORD = "123456";
 
 /* -------------------- COMPONENT -------------------- */
 export default function AddTrainerDetailsPage() {
+   // ✅ ADD THIS FUNCTION HERE
+  const formatName = (value) => {
+    return value
+      .toLowerCase()
+      .replace(/[^a-z.\s]/g, "")
+      .replace(/\s+/g, " ")
+      .trimStart()
+      .split(" ")
+      .map((word) =>
+        word ? word.charAt(0).toUpperCase() + word.slice(1) : ""
+      )
+      .join(" ");
+  };
   const { user, institute } = useAuth();
   const navigate = useNavigate();
+  
 
   const [step, setStep] = useState(1);
 
@@ -937,7 +951,7 @@ export default function AddTrainerDetailsPage() {
     <div className="min-h-screen flex justify-center bg-white py-10">
       <div className="w-full max-w-5xl p-2">
         {/* HEADER */}
-       <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 text-center lg:text-left">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 text-center lg:text-left">
           {/* PROFILE */}
           {/* LEFT : Upload Profile */}
           <div className="flex flex-col items-center mt-6 w-full lg:w-auto">
@@ -983,13 +997,12 @@ export default function AddTrainerDetailsPage() {
 
             <p className="mt-4">Step {step} to 2</p>
 
-           <div className="flex gap-4 mt-4 w-full max-w-xl">
+            <div className="flex gap-4 mt-4 w-full max-w-xl">
               {[1, 2].map((s) => (
                 <div
                   key={s}
-                  className={`h-3 flex-1 rounded-full ${
-                    step >= s ? "bg-orange-500" : "bg-gray-300"
-                  }`}
+                  className={`h-3 flex-1 rounded-full ${step >= s ? "bg-orange-500" : "bg-gray-300"
+                    }`}
                 />
               ))}
             </div>
@@ -999,7 +1012,7 @@ export default function AddTrainerDetailsPage() {
 
         {/* STEP 1 */}
         {step === 1 && (
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
             {/* Row 1 */}
             <div className="flex flex-col">
               <label className="text-sm font-semibold mb-2">
@@ -1008,16 +1021,12 @@ export default function AddTrainerDetailsPage() {
               <input
                 className={inputClass}
                 value={formData.firstName}
-                onChange={(e) => {
-                  let value = e.target.value.replace(/[^A-Za-z.\s]/g, "");
-
-                  // Capitalize first letter automatically
-                  if (value.length > 0) {
-                    value = value.charAt(0).toUpperCase() + value.slice(1);
-                  }
-
-                  setFormData((prev) => ({ ...prev, firstName: value }));
-                }}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    firstName: formatName(e.target.value),
+                  }))
+                }
               />
               {errors.firstName && (
                 <span className="text-red-500 text-xs mt-1">
@@ -1033,16 +1042,12 @@ export default function AddTrainerDetailsPage() {
               <input
                 className={inputClass}
                 value={formData.lastName}
-                onChange={(e) => {
-                  let value = e.target.value.replace(/[^A-Za-z.\s]/g, "");
-
-                  // SAME LOGIC AS FIRST NAME
-                  if (value.length > 0) {
-                    value = value.charAt(0).toUpperCase() + value.slice(1);
-                  }
-
-                  setFormData((prev) => ({ ...prev, lastName: value }));
-                }}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    lastName: formatName(e.target.value),
+                  }))
+                }
               />
               {errors.lastName && (
                 <span className="text-red-500 text-xs mt-1">
@@ -1141,20 +1146,19 @@ export default function AddTrainerDetailsPage() {
               </label>
               <input
                 type="date"
-                className={`${inputClass} ${
-                  errors.joiningDate
+                className={`${inputClass} ${errors.joiningDate
                     ? "border-red-500 focus:border-red-500"
                     : ""
-                }`}
+                  }`}
                 min={
                   formData.dateOfBirth
                     ? new Date(
-                        new Date(formData.dateOfBirth).setDate(
-                          new Date(formData.dateOfBirth).getDate() + 1,
-                        ),
-                      )
-                        .toISOString()
-                        .split("T")[0]
+                      new Date(formData.dateOfBirth).setDate(
+                        new Date(formData.dateOfBirth).getDate() + 1,
+                      ),
+                    )
+                      .toISOString()
+                      .split("T")[0]
                     : "1900-01-01"
                 }
                 max={new Date().toISOString().split("T")[0]}
@@ -1204,9 +1208,8 @@ export default function AddTrainerDetailsPage() {
 
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${
-                      showCategoryDropdown ? "rotate-180" : ""
-                    }`}
+                    className={`transition-transform ${showCategoryDropdown ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -1256,9 +1259,8 @@ export default function AddTrainerDetailsPage() {
                     formData.category &&
                     setShowSubCategoryDropdown(!showSubCategoryDropdown)
                   }
-                  className={`${inputClass} w-full flex items-center justify-between ${
-                    !formData.category && "bg-gray-100 cursor-not-allowed"
-                  }`}
+                  className={`${inputClass} w-full flex items-center justify-between ${!formData.category && "bg-gray-100 cursor-not-allowed"
+                    }`}
                 >
                   <span>
                     {formData.subCategory
@@ -1270,9 +1272,8 @@ export default function AddTrainerDetailsPage() {
 
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${
-                      showSubCategoryDropdown ? "rotate-180" : ""
-                    }`}
+                    className={`transition-transform ${showSubCategoryDropdown ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -1379,15 +1380,14 @@ export default function AddTrainerDetailsPage() {
                   <span>
                     {formData.timings
                       ? timeSlots.find((t) => t.value === formData.timings)
-                          ?.label
+                        ?.label
                       : "Select Time"}
                   </span>
 
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${
-                      showTimeDropdown ? "rotate-180" : ""
-                    }`}
+                    className={`transition-transform ${showTimeDropdown ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -1635,11 +1635,10 @@ export default function AddTrainerDetailsPage() {
                   onClick={handleSubmit}
                   disabled={isSaving}
                   className={`px-10 py-3 rounded-lg font-semibold text-white transition
-    ${
-      isSaving
-        ? "bg-orange-300 cursor-not-allowed"
-        : "bg-orange-500 hover:bg-orange-600"
-    }
+    ${isSaving
+                      ? "bg-orange-300 cursor-not-allowed"
+                      : "bg-orange-500 hover:bg-orange-600"
+                    }
   `}
                 >
                   {isSaving ? "Saving..." : "Save"}

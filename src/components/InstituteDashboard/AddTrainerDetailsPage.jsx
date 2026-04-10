@@ -474,15 +474,15 @@ export default function AddTrainerDetailsPage() {
 
 
   const formatName = (value) => {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z.\s]/g, "") // allow letters + dot + space
-    .split(" ")
-    .map((word) =>
-      word ? word.charAt(0).toUpperCase() + word.slice(1) : ""
-    )
-    .join(" ");
-};
+    return value
+      .toLowerCase()
+      .replace(/[^a-z.\s]/g, "") // allow letters + dot + space
+      .split(" ")
+      .map((word) =>
+        word ? word.charAt(0).toUpperCase() + word.slice(1) : ""
+      )
+      .join(" ");
+  };
 
   /* -------------------- VALIDATION -------------------- */
   const validateStep = () => {
@@ -743,16 +743,12 @@ export default function AddTrainerDetailsPage() {
               <input
                 className={inputClass}
                 value={formData.firstName}
-                onChange={(e) => {
-                  let value = e.target.value.replace(/[^A-Za-z.\s]/g, "");
-
-                  // Capitalize first letter
-                  if (value.length > 0) {
-                    value = value.charAt(0).toUpperCase() + value.slice(1);
-                  }
-
-                  setFormData({ ...formData, firstName: value });
-                }}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    firstName: formatName(e.target.value),
+                  })
+                }
               />
               {errors.firstName && (
                 <span className="text-red-500 text-xs mt-1">
@@ -769,12 +765,12 @@ export default function AddTrainerDetailsPage() {
               <input
                 className={inputClass}
                 value={formData.lastName}
-onChange={(e) =>
-  setFormData({
-    ...formData,
-    lastName: formatName(e.target.value),
-  })
-}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    lastName: formatName(e.target.value),
+                  })
+                }
               />
               {errors.lastName && (
                 <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
@@ -816,12 +812,12 @@ onChange={(e) =>
               <input
                 className={inputClass}
                 value={formData.designation}
-onChange={(e) =>
-  setFormData({
-    ...formData,
-    designation: formatName(e.target.value),
-  })
-}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    designation: formatName(e.target.value),
+                  })
+                }
               />
               {errors.designation && (
                 <p className="text-red-500 text-xs mt-1">

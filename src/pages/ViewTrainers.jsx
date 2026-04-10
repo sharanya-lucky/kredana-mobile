@@ -13,8 +13,8 @@ const getDistanceKm = (lat1, lon1, lat2, lon2) => {
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
@@ -572,7 +572,7 @@ export default function ViewTrainers() {
             <div
               key={t.id}
               onClick={() => navigate(`/trainers/${t.id}`)}
-              className="bg-white rounded-[18px] shadow-lg border cursor-pointer hover:scale-[1.02] transition-transform"
+              className="bg-white rounded-[18px] shadow-lg border cursor-pointer hover:scale-[1.02] transition-transform flex flex-col justify-between h-[320px]"
             >
               {/* PROFILE IMAGE */}
               <div className="h-[160px] rounded-t-[18px] overflow-hidden flex items-center justify-center bg-white">
@@ -587,19 +587,19 @@ export default function ViewTrainers() {
                 )}
               </div>
 
-              <div className="p-4 text-center">
-                <h2 className="text-lg font-bold">
+            <div className="p-4 text-center flex flex-col justify-between h-full">
+               <h2 className="text-xl sm:text-2xl font-bold line-clamp-1 min-h-[28px]">
                   {t.trainerName || `${t.firstName} ${t.lastName}`}
                 </h2>
-                <p className="text-gray-500">
+              <p className="text-gray-500 text-sm sm:text-base min-h-[20px]">
                   {t.city}, {t.state}
                 </p>
                 {t.distance !== undefined && (
-                  <p className="font-semibold text-sm mt-1">
+                  <p className="font-semibold mt-1 text-sm sm:text-base min-h-[24px]">
                     📏 {t.distance.toFixed(2)} km away
                   </p>
                 )}
-                <p className="text-sm font-semibold mt-1 flex items-center justify-center gap-1">
+                <p className="font-semibold mt-1 text-sm sm:text-base flex items-center justify-center gap-1 min-h-[24px]">
                   {t.rating ? (
                     <>
                       <span className="text-yellow-500">⭐</span>
@@ -613,7 +613,7 @@ export default function ViewTrainers() {
                     </>
                   )}
                 </p>
-                <button className="mt-3 w-full bg-[#ff7a00] text-white py-2 rounded-lg text-sm">
+                <button className="mt-auto w-full bg-[#ff7a00] text-white py-2 rounded-lg text-sm">
                   View Details
                 </button>
               </div>

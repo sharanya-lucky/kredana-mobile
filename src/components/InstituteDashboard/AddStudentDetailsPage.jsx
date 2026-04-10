@@ -1009,10 +1009,13 @@ Password: ${DEFAULT_PASSWORD}`);
                 onChange={(e) => {
                   let value = e.target.value.replace(/[^A-Za-z.\s]/g, "");
 
-                  // Capitalize first letter
-                  if (value.length > 0) {
-                    value = value.charAt(0).toUpperCase() + value.slice(1);
-                  }
+                  // ✅ Capitalize every word after space
+                  value = value
+                    .split(" ")
+                    .map((word) =>
+                      word ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : ""
+                    )
+                    .join(" ");
 
                   setFormData((prev) => ({ ...prev, firstName: value }));
                 }}
@@ -1034,10 +1037,13 @@ Password: ${DEFAULT_PASSWORD}`);
                 onChange={(e) => {
                   let value = e.target.value.replace(/[^A-Za-z.\s]/g, "");
 
-                  // ✅ Capitalize first letter
-                  if (value.length > 0) {
-                    value = value.charAt(0).toUpperCase() + value.slice(1);
-                  }
+                  // ✅ Capitalize every word
+                  value = value
+                    .split(" ")
+                    .map((word) =>
+                      word ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : ""
+                    )
+                    .join(" ");
 
                   setFormData((prev) => ({ ...prev, lastName: value }));
                 }}
@@ -1533,49 +1539,49 @@ Password: ${DEFAULT_PASSWORD}`);
                 )}
               </div>
 
-            
+
               {/* Monthly Payment Date (Only Day) */}
-         
-              
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-semibold mb-2">
-                    Monthly Payment Date* (1 - 31)
-                  </label>
 
-                  <input
-                    type="number"
-                    min="1"
-                    max="31"
-                    placeholder="Enter day (1 - 31)"
-                    value={formData.monthlyDate}
-                    onChange={(e) => {
-                      let value = e.target.value;
 
-                      // allow only 1–31
-                      if (value === "" || (Number(value) >= 1 && Number(value) <= 31)) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          monthlyDate: value,
-                        }));
-                      }
-                    }}
-                    className="h-11 px-3 w-full border border-orange-400 rounded-md bg-white outline-none focus:border-2 focus:border-orange-500"
-                  />
+              <div className="flex flex-col">
+                <label className="text-sm font-semibold mb-2">
+                  Monthly Payment Date* (1 - 31)
+                </label>
 
-                  {errors.monthlyDate && (
-                    <span className="text-red-500 text-xs mt-1">
-                      {errors.monthlyDate}
-                    </span>
-                  )}
-                </div>
+                <input
+                  type="number"
+                  min="1"
+                  max="31"
+                  placeholder="Enter day (1 - 31)"
+                  value={formData.monthlyDate}
+                  onChange={(e) => {
+                    let value = e.target.value;
+
+                    // allow only 1–31
+                    if (value === "" || (Number(value) >= 1 && Number(value) <= 31)) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        monthlyDate: value,
+                      }));
+                    }
+                  }}
+                  className="h-11 px-3 w-full border border-orange-400 rounded-md bg-white outline-none focus:border-2 focus:border-orange-500"
+                />
 
                 {errors.monthlyDate && (
                   <span className="text-red-500 text-xs mt-1">
                     {errors.monthlyDate}
                   </span>
                 )}
-              
+              </div>
+
+              {errors.monthlyDate && (
+                <span className="text-red-500 text-xs mt-1">
+                  {errors.monthlyDate}
+                </span>
+              )}
+
               <div className="flex flex-col">
                 <label className="text-sm font-semibold mb-2">
                   Aadhaar Front & Back Photos (Optional)

@@ -50,7 +50,7 @@ const PricingPayments = ({ formData, setFormData }) => {
       <h2 className="text-2xl font-bold mb-8">Pricing & Payments</h2>
 
       {/* Registration Fee */}
-      <div className="w-[98%] mb-28">
+      <div className="w-full sm:w-[70%] md:w-[50%] lg:w-[40%] mb-28">
         <label className="block text-lg font-semibold mb-3">
           Registration Fees*
         </label>
