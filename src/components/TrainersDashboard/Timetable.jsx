@@ -4,7 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-
+import { useRef } from "react";
 import {
   collection,
   getDocs,
@@ -18,12 +18,14 @@ import { auth, db } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 export default function ClassTime() {
+  const calendarRef = useRef(null);
   const [trainerId, setTrainerId] = useState("");
   const [trainerName, setTrainerName] = useState("");
   const [students, setStudents] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [view, setView] = useState("timeGridDay");
 
   const [loadingCategories, setLoadingCategories] = useState(true);
   const categories = [
@@ -447,166 +449,318 @@ export default function ClassTime() {
   /* ---------------- EVENTS ---------------- */
   const events = schedule.map((s) => ({
     id: s.id,
-    title: `${s.title}\n${s.trainerName}\n(${s.students?.length || 0} Students)`,
-    start: s.start?.toDate ? s.start.toDate() : s.start,
-    end: s.end?.toDate ? s.end.toDate() : s.end,
+    title: s.title,
+    start: s.start?.toDate ? s.start.toDate() : new Date(s.start),
+    end: s.end?.toDate ? s.end.toDate() : new Date(s.end),
   }));
-
+  console.log("EVENTS:", events);
   return (
-    <div className="bg-white dark:bg-gray-900 p-4 rounded-lg min-h-screen">
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-        initialView="timeGridWeek"
-        headerToolbar={{
-          left: "prev,next today",
-          center: "title",
-          right: "timeGridDay,timeGridWeek,dayGridMonth,listYear",
-        }}
-        allDaySlot={false}
-        eventMinHeight={80}
-        eventDisplay="block"
-        dayMaxEventRows={false}
-        height="auto"
-        events={events}
-        selectable={true}
-        select={(info) => {
-          const date = info.startStr.split("T")[0];
-          const startTime = info.startStr.split("T")[1]?.slice(0, 5);
-          const endTime = info.endStr?.split("T")[1]?.slice(0, 5);
+    <div className="flex min-h-screen bg-gray-100">
 
-          setEditId(null);
+      {/* RIGHT CONTENT */}
+      <div className="flex-1 p-3 sm:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
 
-          setForm({
-            date,
-            startTime,
-            endTime,
-            category: "",
-            subCategory: "",
-            students: students.map((s) => s.id),
-          });
+          {/* LEFT CONTROLS */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <select
+              className="border rounded px-2 py-1 text-sm"
+              value={view}
+              onChange={(e) => {
+                const newView = e.target.value;
+                setView(newView);
 
-          setShowModal(true);
-        }}
-        eventClick={(info) => {
-          const event = schedule.find((s) => s.id === info.event.id);
+                const calendarApi = calendarRef.current.getApi();
+                calendarApi.changeView(newView);   // 🔥 IMPORTANT
+              }}
+            >
+              <option value="timeGridDay">Day</option>
+              <option value="timeGridWeek">Week</option>
+              <option value="dayGridMonth">Month</option>
+            </select>
 
-          setEditId(event.id);
+            <button className="px-2 py-1 border rounded text-sm">12 hrs</button>
+            <button className="px-2 py-1 bg-orange-500 text-white rounded text-sm">24 hrs</button>
+          </div>
 
-          setForm({
-            date: info.event.startStr.split("T")[0],
-            startTime: info.event.startStr.split("T")[1]?.slice(0, 5),
-            endTime: info.event.endStr?.split("T")[1]?.slice(0, 5),
-            category: event.category || "",
-            subCategory: event.subCategory || "",
-            students: event.students || [],
-          });
-
-          setShowModal(true);
-        }}
-      />
-
-      {/* ---------- MODAL ---------- */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-3">
-          <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl w-full max-w-md shadow-xl space-y-4">
-            <h3 className="text-xl font-semibold text-center">
-              {isEdit ? "✏️ Edit Class" : "📅 Schedule Class"}
-            </h3>
-            {/* TIME RANGE */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-sm text-gray-500">Start Time</label>
-                <input
-                  type="time"
-                  className="w-full border rounded-lg p-2 mt-1"
-                  value={form.startTime}
-                  onChange={(e) =>
-                    setForm({ ...form, startTime: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-500">End Time</label>
-                <input
-                  type="time"
-                  className="w-full border rounded-lg p-2 mt-1"
-                  value={form.endTime}
-                  onChange={(e) =>
-                    setForm({ ...form, endTime: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            {/* CATEGORY */}
-            <div>
-              <label className="text-sm text-gray-500">Category</label>
-              <select
-                className="w-full border rounded-lg p-2 mt-1"
-                value={form.category}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    category: e.target.value,
-                    subCategory: "",
-                  })
-                }
-              >
-                <option value="">Select Category</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* SUBCATEGORY */}
-            <div>
-              <label className="text-sm text-gray-500">Sub Category</label>
-              <select
-                className="w-full border rounded-lg p-2 mt-1"
-                value={form.subCategory}
-                onChange={(e) =>
-                  setForm({ ...form, subCategory: e.target.value })
-                }
-              >
-                <option value="">Select SubCategory</option>
-                {(subCategoryMap[form.category] || []).map((sub) => (
-                  <option key={sub} value={sub}>
-                    {sub}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* STUDENT COUNT */}
-            <div className="bg-blue-50 text-blue-700 text-sm p-2 rounded-lg text-center">
-              👥 {form.students.length} students assigned automatically
-            </div>
-
-            {/* ACTIONS */}
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={saveClass}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
-              >
-                {isEdit ? "Update" : "Save"}
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditId(null);
-                }}
-                className="flex-1 bg-gray-200 dark:bg-gray-700 py-2 rounded-lg"
-              >
-                Cancel
-              </button>
-            </div>
+          {/* RIGHT CONTROLS */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <input
+              placeholder="Search here..."
+              className="border rounded px-3 py-1 text-sm w-full sm:w-48"
+            />
+            <button className="bg-orange-500 text-white px-3 py-1 rounded text-sm">
+              + Add New
+            </button>
           </div>
         </div>
-      )}
+        <div className="bg-white border border-orange-400 rounded-lg p-2 sm:p-4 overflow-x-auto">
+          <h2 className="text-lg font-semibold mb-2 text-left">
+            {new Date().toLocaleDateString("en-US", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </h2>
+          {view !== "dayGridMonth" && (
+          <FullCalendar
+          ref={calendarRef}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+
+            initialView="timeGridDay"
+            headerToolbar={false}
+
+            allDaySlot={false}
+            expandRows={true}
+         
+            dayHeaderContent={() => ""}
+            titleFormat={{
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            }}
+            dayHeaderFormat={{ weekday: "short" }}
+            slotDuration="01:00:00"
+            slotLabelInterval="01:00"
+            dayMaxEvents={false}
+            fixedWeekCount={false}
+            slotMinTime="09:00:00"
+            slotMaxTime="20:00:00"
+          
+           
+
+
+
+
+            slotLabelFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }}
+
+            eventMinHeight={20}
+            slotEventOverlap={false}
+            eventDidMount={(info) => {
+  if (view === "timeGridDay") {
+    info.el.style.backgroundColor = "#f4b183";
+    info.el.style.borderRadius = "10px";
+
+    /* 🔥 exact bar size */
+    info.el.style.height = "30px";
+
+    /* 🔥 perfect vertical alignment */
+    info.el.style.margin = "6px 14px 0 14px";
+  }
+}}
+            eventContent={(arg) => {
+              if (view === "dayGridMonth") {
+                return (
+                  <div className="bg-orange-500 text-white text-xs p-1 rounded text-center">
+                    {arg.event.title}
+                  </div>
+                );
+              }
+            }}
+            height="auto"
+            contentHeight="auto"
+
+            events={events}
+            selectable={true}
+            select={(info) => {
+              const date = info.startStr.split("T")[0];
+              const startTime = info.startStr.split("T")[1]?.slice(0, 5);
+              const endTime = info.endStr?.split("T")[1]?.slice(0, 5);
+
+              setEditId(null);
+
+              setForm({
+                date,
+                startTime,
+                endTime,
+                category: "",
+                subCategory: "",
+                students: students.map((s) => s.id),
+              });
+
+              setShowModal(true);
+            }}
+            eventClick={(info) => {
+              const event = schedule.find((s) => s.id === info.event.id);
+
+              setEditId(event.id);
+
+              setForm({
+                date: info.event.startStr.split("T")[0],
+                startTime: info.event.startStr.split("T")[1]?.slice(0, 5),
+                endTime: info.event.endStr?.split("T")[1]?.slice(0, 5),
+                category: event.category || "",
+                subCategory: event.subCategory || "",
+                students: event.students || [],
+              });
+
+              setShowModal(true);
+            }}
+          />
+          )}
+        </div>
+        {view === "dayGridMonth" && (
+  <div className="mt-4">
+
+    {/* MONTH TITLE */}
+    <h2 className="text-lg font-semibold mb-4">April, 2026</h2>
+
+    {/* DAYS GRID */}
+    <div className="grid grid-cols-7 gap-4 text-center">
+      {Array.from({ length: 30 }).map((_, i) => {
+        const day = i + 1;
+
+        const event = events.find(
+          (e) => new Date(e.start).getDate() === day
+        );
+
+        return (
+          <div
+            key={day}
+            className={`p-3 rounded text-sm ${
+              event
+                ? "bg-orange-500 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            {day}
+            {event && (
+              <div className="text-[10px] mt-1">
+                {event.title}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+
+    {/* EVENT CARDS */}
+    <div className="flex flex-wrap gap-3 mt-6">
+      {events.map((e) => (
+        <div
+          key={e.id}
+          className="border border-orange-400 rounded px-3 py-2 text-sm"
+        >
+          {new Date(e.start).toLocaleDateString()} <br />
+          {new Date(e.start).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+          {" - "}
+          {e.title}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+        
+        {/* ---------- MODAL ---------- */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-3">
+            <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl w-full max-w-md shadow-xl space-y-4">
+              <h3 className="text-xl font-semibold text-center">
+                {isEdit ? "✏️ Edit Class" : "📅 Schedule Class"}
+              </h3>
+              {/* TIME RANGE */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm text-gray-500">Start Time</label>
+                  <input
+                    type="time"
+                    className="w-full border rounded-lg p-2 mt-1"
+                    value={form.startTime}
+                    onChange={(e) =>
+                      setForm({ ...form, startTime: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-500">End Time</label>
+                  <input
+                    type="time"
+                    className="w-full border rounded-lg p-2 mt-1"
+                    value={form.endTime}
+                    onChange={(e) =>
+                      setForm({ ...form, endTime: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              {/* CATEGORY */}
+              <div>
+                <label className="text-sm text-gray-500">Category</label>
+                <select
+                  className="w-full border rounded-lg p-2 mt-1"
+                  value={form.category}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      category: e.target.value,
+                      subCategory: "",
+                    })
+                  }
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* SUBCATEGORY */}
+              <div>
+                <label className="text-sm text-gray-500">Sub Category</label>
+                <select
+                  className="w-full border rounded-lg p-2 mt-1"
+                  value={form.subCategory}
+                  onChange={(e) =>
+                    setForm({ ...form, subCategory: e.target.value })
+                  }
+                >
+                  <option value="">Select SubCategory</option>
+                  {(subCategoryMap[form.category] || []).map((sub) => (
+                    <option key={sub} value={sub}>
+                      {sub}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* STUDENT COUNT */}
+              <div className="bg-blue-50 text-blue-700 text-sm p-2 rounded-lg text-center">
+                👥 {form.students.length} students assigned automatically
+              </div>
+
+              {/* ACTIONS */}
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={saveClass}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
+                >
+                  {isEdit ? "Update" : "Save"}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditId(null);
+                  }}
+                  className="flex-1 bg-gray-200 dark:bg-gray-700 py-2 rounded-lg"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

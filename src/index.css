@@ -44,3 +44,95 @@ html {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
+
+
+
+
+/* ===== FINAL CLEAN TIMETABLE UI ===== */
+
+/* remove ALL borders first */
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border: none !important;
+}
+
+/* white background + horizontal lines */
+.fc-timegrid-slot {
+  height: 72px !important;        
+  border-bottom: 1px solid #e5e7eb !important;
+  background-color: #ffffff !important;
+  
+}
+
+/* left time column line */
+.fc-timegrid-axis {
+  width: 85px !important;
+  padding-left: 12px !important;
+  font-size: 14px !important;
+  font-weight: 500;
+  border-right: 1px solid #e5e7eb !important;
+}
+
+/* remove vertical column lines */
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border: none !important;
+}
+
+.fc-timegrid-col {
+  border: none !important;
+}
+
+/* remove header borders */
+.fc-col-header-cell {
+  border: none !important;
+  background-color: #ffffff !important;
+}
+
+/* remove any grid background */
+.fc {
+  --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #ffffff;
+}
+
+/* event style (orange bars) */
+.fc-event {
+  background-color: #f4b183 !important;
+  border: none !important;
+  border-radius: 10px !important;
+}
+
+/* event text */
+.fc-event-main {
+  display: flex !important;
+  align-items: center !important;
+  height: 100%;
+}
+
+/* remove blue selection */
+.fc-highlight {
+  background: transparent !important;
+}
+
+/* remove red line */
+.fc-timegrid-now-indicator-line {
+  display: none !important;
+}
+
+.fc-timegrid-event {
+  display: flex !important;
+  align-items: center !important;
+}
+.fc-timegrid-slot {
+  height: 70px !important;
+  line-height: 70px !important;
+}
+.fc-timegrid-axis {
+  width: 80px !important;
+  text-align: left !important;
+  padding-left: 10px;
+}
+.fc-col-header-cell {
+  padding-left: 10px !important;
+  text-align: left !important;
+}
